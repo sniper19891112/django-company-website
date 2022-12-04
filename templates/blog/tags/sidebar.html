@@ -1,0 +1,150 @@
+{% load blogs_info %}
+{% load staticfiles %}
+{% block compress_css %}
+<style>
+    .post_item img {
+        width:120px;
+        height:100px;
+    }
+</style>
+
+{% endblock %}
+<div id="secondary" class="widget-area" role="complementary">
+    {% if extra_sidebars %}
+        {% for sidebar in extra_sidebars %}
+
+            <aside class="widget_text widget widget_custom_html"><h3 class="widget-title">
+                {{ sidebar.name }}</h3>
+                <div class="textwidget custom-html-widget">
+                    {{ sidebar.content|custom_markdown }}
+                </div>
+            </aside>
+        {% endfor %}
+    {% endif %}
+    {% if most_read_articles %}
+        <aside class="single_sidebar_widget popular_post_widget" id="recent-posts-2">
+                            <h3 class="widget_title">Most Read Posts</h3>
+                            {% for a in most_read_articles %}
+                            <div class="media post_item">
+                                {% markdown_images a.body as imgs %}
+                                {% if imgs %}
+                                    <img src="{{ imgs.0 }}" alt="{{ a.title }}">
+                                {% endif %}
+                                <div class="media-body">
+                                    <a href="{{ a.get_absolute_url }}" title="{{ a.title }}">
+                                        <h3>{{ a.title }}...</h3>
+                                    </a>
+                                    <p>{{ a.body|custom_markdown|escape|truncate|slice:80 }}...</p>
+                                    <p class="mt-3"><i class="fas fa-eye"></i> {{ a.views }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+                        </aside>
+        
+    {% endif %}
+    {% if sidebar_categorys %}
+    <aside class="single_sidebar_widget post_category_widget">
+                            <h4 class="widget_title">Category</h4>
+                            <ul class="list cat-list">
+                            {% for c in sidebar_categorys %}
+                                <li>
+                                    <a href="{{ c.get_absolute_url }}" class="d-flex">
+                                        <p>{{ c.name }}</p>
+                                    </a>
+                                </li>
+                                
+                                {% endfor %}
+                            </ul>
+                        </aside>
+        
+    {% endif %}
+    {% if sidebar_comments and  open_site_comment %}
+        <aside id="ds-recent-comments-4" class="widget ds-widget-recent-comments"><h3 class="widget-title">Recent comments</h3>
+            {% comment %}<ul class="ds-recent-comments" data-num-items="5" data-show-avatars="1" data-show-time="1"
+            data-show-title="1" data-show-admin="1" data-avatar-size="30" data-excerpt-length="70"></ul>{% endcomment %}
+            <ul id="recentcomments">
+                {% for c in sidebar_comments %}
+                    <li class="recentcomments">
+                <span class="comment-author-link">
+                    {{ c.author.username }}</span>
+                        published in
+                        <a href="{{ c.article.get_absolute_url }}#comment-{{ c.pk }}">{{ c.article.title }}</a>》
+                    </li>
+                {% endfor %}
+            </ul>
+        </aside>
+    {% endif %}
+    {% if recent_articles %}
+    <aside class="single_sidebar_widget popular_post_widget" id="recent-posts-2">
+                            <h3 class="widget_title">Recent Post</h3>
+                            {% for a in  recent_articles %}
+                            <div class="media post_item">
+                                {% markdown_images a.body as imgs %}
+                                {% if imgs %}
+                                    <img src="{{ imgs.0 }}" alt="{{ a.title }}">
+                                {% endif %}
+                                <div class="media-body">
+                                    <a href="{{ a.get_absolute_url }}" title="{{ a.title }}">
+                                        <h3>{{ a.title }}...</h3>
+                                    </a>
+                                    <p>{{ a.body|custom_markdown|escape|truncate|slice:70 }}...</p>
+                                    <p class="mt-3"><i class="fas fa-upload"></i> {{ a.pub_time|timesince }} ago</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+                        </aside>
+       
+    {% endif %}
+    {% if sidabar_links %}
+        <aside id="linkcat-0" class="widget widget_links"><h3 class="widget-title">Bookmark</h3>
+            <ul class='xoxo blogroll'>
+                {% for l in sidabar_links %}
+                    <li>
+                        <a href="{{ l.link }}" target="_blank" title="{{ l.name }}">{{ l.name }}</a>
+                    </li>
+                {% endfor %}
+
+            </ul>
+        </aside>
+    {% endif %}
+    {% if show_google_adsense %}
+        <aside id="text-2" class="widget widget_text"><h3 class="widget-title">Google AdSense</h3>
+            <div class="textwidget">
+                {{ google_adsense_codes|safe }}
+            </div>
+        </aside>
+    {% endif %}
+    {% if sidebar_tags %}
+    <aside class="single_sidebar_widget tag_cloud_widget">
+                            <h4 class="widget_title">Popular tags</h4>
+                            <ul class="list">
+                            
+                            {% for tag,count,size in sidebar_tags %}
+                                <li>
+                                    <a href="{{ tag.get_absolute_url }}" title="{{ count }} {{ tag.name }}">{{ tag.name }} ({{ count }})</a>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                        </aside>
+        
+    {% endif %}
+    <aside class="single_sidebar_widget post_category_widget">
+                            <h4 class="widget_title">Category</h4>
+                            <ul class="list cat-list">
+                            <li><a href="/admin/" class="d-flex" rel="nofollow">Admin</a></li>
+                            {% if user.is_authenticated %}
+                                <li><a href="{% url 'accounts:logout' %}" class="d-flex" rel="nofollow">Sign out</a>
+                                </li>
+                            {% else %}
+                                <li><a href="{% url 'accounts:login' %}" class="d-flex" rel="nofollow">log in</a>
+                            {% endif %}
+                            {% if user.is_superuser %}
+                                <li><a href="{% url 'blog:refresh' %}" class="d-flex" target="_blank">Refresh the cache</a></li>
+                    
+                            {% endif %}
+                            </ul>
+                        </aside>
+    
+</div><!-- #secondary -->

@@ -1,0 +1,351 @@
+{% extends "main/layout.html" %}
+{% load staticfiles %}
+{% load blogs_info %}
+{% load cache %}
+{% block meta %}
+    <title>{{ article.title }} | {{ SITE_DESCRIPTION }}</title>
+    <meta property="og:type" content="article"/>
+    <meta property="og:locale" content="en_US"/>
+    <meta property="og:title" content="{{ article.title }}"/>
+    <meta name="robots" content="index, follow">
+    <meta property="og:description" content="{{ article.body|custom_markdown|striptags|truncatewords:20 }}"/>
+    <meta property="og:url"
+          content="{{ article.get_full_url }}"/>
+    <meta property="article:published_time" content="{% datetimeformat article.pub_time %}"/>
+    <meta property="article:modified_time" content="{% datetimeformat article.pub_time %}"/>
+    <meta property="article:author" content="{{ article.author.get_full_url }}"/>
+    <meta property="article:section" content="{{ article.category.name }}"/>
+    {% for t in article.tags.all %}
+        <meta property="article:tag" content="{{ t.name }}"/>
+    {% endfor %}
+    <meta property="og:site_name" content="{{ SITE_NAME }}"/>
+
+    <meta name="description" content="{{ article.body|custom_markdown|striptags|truncatewords:20 }}"/>
+    {% if article.tags %}
+        <meta name="keywords" content="{{ article.tags.all|join:"," }}"/>
+    {% else %}
+        <meta name="keywords" content="{{ SITE_KEYWORDS }}"/>
+    {% endif %}
+    {% markdown_images article.body as imgs %}
+    {% if imgs %}
+        <meta property="og:image" content="{{ imgs.0 }}" />
+    {% endif %}
+    <meta property="og:image:alt" content="{{ article.title }}" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="{{ SITE_NAME }}">
+    <meta name="twitter:title" content="{{ article.title }}">
+    <meta name="twitter:description" content="{{ article.body|custom_markdown|striptags|truncatewords:8 }}">
+    <meta name="twitter:creator" content="{{ SITE_NAME }}">
+    {% if imgs %}
+        <meta name="twitter:image:src" content="{{ imgs.0 }}">
+    {% endif %}
+    <meta name="twitter:image:alt" content="{{ article.title }}" />
+    <meta name="twitter:domain" content="www.agrowdev.com">
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+{% endblock %}
+{% block compress_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'app/img/pater/pater.css' %}" />
+<link rel="stylesheet" href="{% static 'app/css/blog-styles.css' %}">
+<link rel="stylesheet" href="{% static 'app/css/bingwithplayer.css' %}">
+<style>
+.caps, .pagination .previous_page, .pagination .next_page {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .125em;
+}
+#bingewith-player h4.caps, #bingewith-player .pagination h4.previous_page, .pagination #bingewith-player h4.previous_page, #bingewith-player .pagination h4.next_page, .pagination #bingewith-player h4.next_page {
+    font-size: 12px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+</style>
+{% endblock %}
+{% block content %}
+{% include 'blog/tags/share_btn.html' %}
+    <div class="content">
+        <a class="pater" href="" rel="nofollow" onClick="recordOutboundLink(this, 'Outbound Links', 'Storyblocks08112017');return false;">
+            <img src="{% static 'app/img/pater/storyblocks.jpg' %}" class="pater__img" alt="Storyblocks"/>
+            <h3 class="pater__title">​7 Days of Free Images with Storyblocks</h3>
+            <p class="pater__desc">Download anything you want from over 400,000 photos, vectors, and backgrounds! <strong>Start downloading now &rarr;</strong></p>
+		</a>
+        <a class="banner" href="" onClick="recordOutboundLink(this, 'Outbound Links', 'PageCloud31102017');return false;">
+			<img class="banner__img" src="{% static 'app/img/pater/phone.png' %}" alt="Phone with theme" />
+			<div class="banner__sponsor"><span>Sponsored by</span> <img class="banner__logo" src="{% static 'app/img/pater/PageCloud_logo.png' %}" alt="PageCloud" /></div>
+			<h3 class="banner__title"> <span>Build a website.</span> <span>Create it. Change it.</span></h3>
+			<p class="banner__description">The website builder you'll love to use.</p>
+		</a>
+    </div>
+        <!-- ***** Blog Details Area Start ***** -->
+    <section class="blog_area single-post-area mt-20">
+        <div class="container">
+            <div class="row ">
+                <div class="col-lg-2">
+                    
+                </div>
+                <div class="col-lg-8 col-md-11 col-sm-12 posts-list story">
+                    
+                    <h2 class="heading">{{article.title}}</h2>
+                    
+                    <div id="bingewith-player" style="color: white;">
+                    <h4 class="caps">Listen to this article</h4>
+            
+                    <div id="rectangle" style="display: block; border-color: rgb(121, 88, 159);">
+                        
+                        <div id="player-container" style=""><audio id="player" title="Ground Control to Major TOML: Why Buildpacks Use a Most Peculiar Format" data-playlist_index="0" data-playlist_articles="[[&quot;1595436769::_Joe_Kutner:_Ground_Control_to_Major_TOML_Why_Buildpacks_Use_a_Most_Peculiar_Format.mp3&quot;,&quot;Ground Control to Major TOML: Why Buildpacks Use a Most Peculiar Format&quot;,&quot;Joe Kutner&quot;,&quot;03:35&quot;]]" data-href="https://storage.googleapis.com/tvchat-mp3/1595436769::_Joe_Kutner:_Ground_Control_to_Major_TOML_Why_Buildpacks_Use_a_Most_Peculiar_Format.mp3" data-title="Ground Control to Major TOML: Why Buildpacks Use a Most Peculiar Format" data-duration="03:35" src="https://storage.googleapis.com/tvchat-mp3/1595436769::_Joe_Kutner:_Ground_Control_to_Major_TOML_Why_Buildpacks_Use_a_Most_Peculiar_Format.mp3"><source type="audio/mp3"></audio>
+                            <button type="button" style="border:none;" id="backwards-area" class="button"></button>
+                        <div id="backwards-background" style="background-color: rgb(121, 88, 159);"></div>
+                        <div id="backwards"></div>
+                        <button type="button"  id="play-area" style="border:none;" class="button" data-track-audio-index="0"></button>
+                        <div class="play left" id="play-outline" style="display: block;">
+                            <div id="play-background" style="background-color: rgb(121, 88, 159);"></div>
+                            <div id="play-graphic"></div>
+                        </div>
+                        
+                        <div class="pause pause-rectangle" style="background-color: white; border: 1.5px solid rgb(121, 88, 159); display: none;"></div>
+                        <div class="pause pause-rectangle-1" style="background-color: white; border: 1.5px solid rgb(121, 88, 159); display: none;"></div>
+                        <button type="button"style="border:none;"  id="forwards-area" class="button"></button>
+                        <div id="forwards-background" style="background-color: rgb(121, 88, 159);"></div>
+                        <!--<div id="divider-line"></div>-->
+                            <div id="forwards" style="color: rgb(121, 88, 159);"></div>
+                        <div id="progress">
+                            <div id="progress-text" style="color: rgb(121, 88, 159);">Remaining</div>
+                            <div id="duration" style="color: rgb(121, 88, 159);">2:35</div>
+                        </div>
+                            <button type="button" style="border:none;" id="speed-area" class="button"></button>
+                        <div id="speed-container">
+                            <!--<div id="speed-line"></div>-->
+                            <div id="speed-text" style="color: rgb(121, 88, 159);">Speed</div>
+                            <div id="speed" style="color: rgb(121, 88, 159);">1.0X</div>
+                        </div>
+                    
+                        <div id="pulltab" class="pulltab-collapsed" style="display: none; border-color: rgb(121, 88, 159); color: rgb(121, 88, 159);">
+                        <div id="pulltab-text">Playlist</div>
+                        </div>
+                    </div>
+                    <div id="playlist" style="display: none; border-color: rgb(121, 88, 159); color: rgb(121, 88, 159);">
+                    
+                    <div id="playlist-entry-0" class="playlist-entry" style="border-color: rgb(121, 88, 159);">
+                        <div class="playlist-entry-status">
+                            <div class="arrow-triangle-small left" style="background-color: rgb(121, 88, 159);"></div>
+                        </div>
+                        <div class="playlist-entry-title"></div>
+                        <div class="playlist-entry-duration"></div>
+                        </div>
+                        <div id="playlist-entry-1" class="playlist-entry" style="border-color: rgb(121, 88, 159);">
+                        <div class="playlist-entry-status" style="visibility: hidden">
+                            <div class="arrow-triangle-small left" style="background-color: rgb(121, 88, 159);"></div>
+                        </div>
+                        <div class="playlist-entry-title"></div>
+                        <div class="playlist-entry-duration"></div>
+                        </div>
+                        <div id="playlist-entry-2" class="playlist-entry" style="border-color: rgb(121, 88, 159);">
+                        <div class="playlist-entry-status" style="visibility: hidden">
+                            <div class="arrow-triangle-small left" style="background-color: rgb(121, 88, 159);"></div>
+                        </div>
+                        <div class="playlist-entry-title"></div>
+                        <div class="playlist-entry-duration"></div>
+                        </div>
+                        <div id="playlist-entry-3" class="playlist-entry" style="border-color: rgb(121, 88, 159);">
+                        <div class="playlist-entry-status" style="visibility: hidden">
+                            <div class="arrow-triangle-small left" style="background-color: rgb(121, 88, 159);"></div>
+                        </div>
+                        <div class="playlist-entry-title"></div>
+                        <div class="playlist-entry-duration"></div>
+                        </div>
+                    </div>
+                        <div id="generate-audio" style="display: none;">
+                            <div id="generate-area"></div>
+                            <div id="generate-text">Click to Generate Audio</div>
+                            <div id="generating-text" style="display: none;">Generating audio</div>
+                            <div id="generate-duration"></div>
+                        </div>
+                        <div id="signup" style="display: none;">
+                        <div id="signup-text">Sign up at <a style="color: purple;" href="https://bingewith.com/about">BingeWith</a> to let your audience Listen!<p></p>
+                        </div>
+                    </div>
+                    </div></div>
+                    <div class="">
+                        {% load_article_detail_info article True user %}
+                    </div>
+                    <div class="navigation-top">
+                        <div class="d-sm-flex justify-content-between text-center">
+                            <div class="col-sm-4 text-center my-2 my-sm-0">
+                                <p class="like-info mr-5" ><span class="align-middle"></span></p>
+                            </div>
+                            <div class="col-sm-4 text-center my-2 my-sm-0">
+                            
+                            {% get_comment_count article as count%}
+                                <p class="comment-count"><span class="align-middle"><i class="fa fa-comment"></i></span>{{count}}  Comments</p>
+                            </div>
+                            <ul class="social-icons">
+                                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                                <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                                <li><a href="#"><i class="fab fa-dribbble"></i></a></li>
+                                <li><a href="#"><i class="fab fa-behance"></i></a></li>
+                            </ul>
+                        </div>
+                        {% if article.type == 'a' %}
+                            <div class="navigation-area">
+                                <div class="row">
+                                {% if next_article %}
+                                    <div class="col-lg-6 col-md-6 col-12 nav-left flex-row d-flex justify-content-start align-items-center">
+                                    <div class="thumb">
+                                        <a href="{{ next_article.get_absolute_url }}">
+                                            <img class="img-fluid" src="{% static 'app/img/post/preview.png' %}" alt="">
+                                        </a>
+                                    </div>
+                                    <div class="arrow">
+                                        <a href="{{ next_article.get_absolute_url }}">
+                                            <span class="lnr text-white ti-arrow-left"></span>
+                                        </a>
+                                    </div>
+                                    <div class="detials">
+                                        <p>Prev Post</p>
+                                        <a href="{{ next_article.get_absolute_url }}">
+                                            <h4>{{ next_article.title }}</h4>
+                                        </a>
+                                    </div>
+                                    </div>
+                                {% endif %}
+                                {% if prev_article %}
+                                    <div class="col-lg-6 col-md-6 col-12 nav-right flex-row d-flex justify-content-end align-items-center">
+                                    <div class="detials">
+                                        <p>Next Post</p>
+                                        <a href="{{ prev_article.get_absolute_url }}">
+                                            <h4>{{ prev_article.title }}</h4>
+                                        </a>
+                                    </div>
+                                    <div class="arrow">
+                                        <a href="{{ prev_article.get_absolute_url }}">
+                                            <span class="lnr text-white ti-arrow-right"></span>
+                                        </a>
+                                    </div>
+                                    <div class="thumb">
+                                        <a href="{{ prev_article.get_absolute_url }}">
+                                            <img class="img-fluid" src="{% static 'app/img/post/next.png' %}" alt="">
+                                        </a>
+                                    </div>
+                                    </div>
+                                {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    
+                    {% load_comments_list article  %}
+                    <div class="comment-form">
+                        <h2 class="mb-4">Leave A Comment</h2>
+                        {% if user.is_authenticated %}
+                        <form id = "comment_form" action="{% url 'comment:update_comment' %}" class="form-contact comment_form" method="POST">
+
+                            <div id="reply_content_container" style="display:none;">
+                                <p id="reply_title">Reply：</p>
+                                <div id="reply_content"></div>
+                            </div>
+
+                            {% csrf_token %}
+                            {% get_comment_form article as comment_form%}
+                            {% for field in comment_form %}
+                                {{ field }}
+                            {% endfor %}
+
+                            <span id="comment_error" class="text-danger pull-left"></span>
+                            <div class="form-group">
+                                <button type="submit" class="button button-contactForm btn_1 boxed-btn" value="comment">Comment</button>
+                            </div>
+                        </form>
+                        {% else %}
+                            Please login and comment
+                            <a class = "btn btn-primary" href="{% url 'accounts:login' %}?from={{ request.get_full_path }}">log in</a>
+                            <span> or </span>
+                        {% endif %}
+                                        
+                </div>
+                    
+                </div>
+                <div class="col-lg-2">
+                    <audio src="" controls></audio>
+                </div>   
+            </div>
+            
+        </div>
+            <div class="container-fluid">
+                <div class="job-page-tittle text-center mb-80">
+                        <h2 class="heading">Related<span class="accent"> Articles</span>.
+                        </h2>
+                </div>
+                <div class="row">
+                    {% load_related_articles article request.user article.category.name article.tags.all as articles_list %}
+                    
+                    {% for art in articles_list %}
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            
+                            {% load_article_detail art True user %}
+                            
+                        </div>
+                    {% endfor %}
+              </div>  
+            </div>
+    </section>
+    <!-- ***** Blog Details Area End ***** -->
+
+
+{% endblock content %}
+
+{% block script_extends %}
+    
+    <script type="text/javascript">
+            
+            
+            function reply(reply_comment_id){
+            // 设置值
+            $('#reply_comment_id').val(reply_comment_id);
+            var html = $("#comment_" + reply_comment_id).html();
+            $('#reply_content').html(html);
+            $('#reply_content_container').show();
+            $('html').animate({scrollTop: $('#comment_form').offset().top - 60}, 300, function(){
+                CKEDITOR.instances['id_text'].focus();
+            });
+        }
+
+        $("#comment_form").submit(function(){
+            $("#comment_error").text('');
+            if(CKEDITOR.instances['id_text'].document.getBody().getText().trim() === ''){
+                $("#comment_error").text('Comment content cannot be empty');
+                return false;``
+            }
+        });
+        $('.box').on('click', function(){
+            $(".share").toggleClass('scale');
+            $('div#hide').removeAttr('id');
+            $('.active').toggleClass('open');
+        });
+        
+        
+        $('.share-facebook').on('click', function(){
+            window.open("https://www.facebook.com/sharer/sharer.php?u=https://{{ request.get_host }}{{ article.get_absolute_url }}", "");
+        });
+        $('.share-linkedin').on('click', function(){
+            window.open("https://www.linkedin.com/sharing/share-offsite/?url=https://{{ request.get_host }}{{ article.get_absolute_url }}", "");
+        });
+        $('.share-twitter').on('click', function(){
+            window.open("https://twitter.com/share?text={{ article.title }}&url=https://{{ request.get_host }}/{{ article.get_absolute_url }}", "");
+        });
+        $('.share-email').on('click', function(){
+            window.open("https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=&su={{ article.title }}&body=+https:\/\/{{ request.get_host }}{{ article.get_absolute_url }}\/+&ui=2&tf=1&pli=1");
+        });
+        $('.share-pinterest').on('click', function(){
+            window.open("http://pinterest.com/pin/create/button/?url=https://{{ request.get_host }}/{{ article.get_absolute_url }}/&description={{article.title}}", "");
+        });
+
+    </script>
+    <script src="{% static 'app/js/blog_play.js' %}"></script>
+{% endblock %}
+
+

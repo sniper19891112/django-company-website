@@ -1,0 +1,102 @@
+version: '3.4'
+
+services:
+  webserver:
+    restart: always
+    container_name: agrosite
+    build:
+      dockerfile: Dockerfile
+      context: ./.docker/agrosite
+    privileged: true
+    volumes:
+      - ./:/opt/agrosite
+      - ./.docker-cache/pip:/root/.cache/pip
+    ports:
+      - 8000:8000
+    working_dir: /opt/agrosite
+    depends_on:
+      - db
+      - redis
+      - nginx
+      - esearch1
+    command: /usr/local/bin/gunicorn agrosite.wsgi:application -w 2 -b :8000
+    env_file:
+      - .env
+    networks:
+      - djangonetwork
+  
+  nginx:
+    restart: always
+    build: ./config/nginx/
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/opt/agrosite
+      - ./dh-param/dhparam-2048.pem:/etc/ssl/certs/dhparam-2048.pem
+      - ./private:/etc/nginx/certs
+    networks:
+      - djangonetwork
+  db:
+    restart: always
+    image: postgres:latest
+    hostname: agroapp_db
+    volumes:
+      - postgresdb:/var/lib/postgresdb
+      - postgresdb_backup:/backups
+    ports:
+      - 5432
+    privileged: false
+    env_file:
+      - .db.env
+    networks:
+      - djangonetwork
+      
+  redis:
+    restart: always
+    image: bitnami/redis:latest
+    privileged: false
+    command: redis-server --requirepass Puneeth@123
+    ports:
+      - 6379
+    env_file:
+      - .env
+    volumes:
+      - redisdb:/bitnami/redis/data
+    networks:
+      - djangonetwork
+
+  esearch1:
+    restart: always
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
+    container_name: esearch1
+    environment:
+      - node.name=esearch1
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=esearch1
+      - cluster.initial_master_nodes=esearch1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - djangonetwork
+
+  
+
+volumes:
+  postgresdb:
+  postgresdb_backup:
+  redisdb:
+  data01:
+
+networks:
+  djangonetwork:
+    driver: bridge

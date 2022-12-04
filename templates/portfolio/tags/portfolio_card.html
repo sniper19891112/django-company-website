@@ -1,0 +1,36 @@
+
+<div class="col-12 col-sm-6 col-md-4">
+	<div class="square-flip">
+		<div class='square' data-image="{{portfolio.cover.url}}">
+			<div class="square-container">
+				<div class="align-center"><img src="{{portfolio.cover.url}}" class="boxshadow" alt="{{portfolio.title}}"></div>
+				
+				<h2 class="textshadow" style="margin-top:20px;">{{portfolio.title}}</h2>
+			</div>
+			<div class="flip-overlay"></div>
+		</div>
+		<div class='square2' data-image="{{portfolio.cover.url}}">
+			<div class="square-container2">
+				<div class="align-center"></div>
+				<a href="#portfolio{{portfolio.id}}" class="boxshadow kallyas-button">View Demos</a>
+			</div>
+			<div class="flip-overlay"></div>
+		</div>
+	</div>
+</div>
+
+{% comment %} <div class="content">
+
+				<div class="grid">
+					
+					<a class="grid__item" href="#preview-5">
+						<div class="box">
+							<div class="box__shadow"></div>
+							<img class="box__img" src="{{portfolio.cover.url}}" alt="Some image"/>
+							<h3 class="box__title"><span class="box__title-inner" data-hover="Lim">Lim</span></h3>
+							<h4 class="box__text box__text--bottomcloser"><span class="box__text-inner">{{portfolio.title}}</span></h4>
+						</div>
+					</a>
+					
+				</div>
+			</div> {% endcomment %}

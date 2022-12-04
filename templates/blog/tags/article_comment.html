@@ -1,0 +1,102 @@
+{% load blogs_info %}
+{% load staticfiles %}
+    <div class="comments-area">
+									
+            <h2 class="title" id="comment">{{ total_comments }} comments</h2>
+            <ol>
+                
+                <li class="single_comment_area" id="comment_list">
+                        <!-- Comment Content -->
+                        
+                        {% for comment in comments %} 
+                        <div  class="user d-flex mb-4 mt-4"  id="root_{{ comment.pk }}">
+                            <!-- Comment Author -->
+                            {% ifequal comment.user.username 'reborn' %}
+                            <div class="thumb">
+                                <img src="{% static 'app/img/comment/comment_2.png' %}" alt="{{ comment.user.username }}">
+                            </div>
+                            {% else %}
+                            <div class="thumb">
+                                <img src="{% static 'app/img/comment/comment_2.png' %}" alt="{{ comment.user.username }}">
+                            </div>
+                            {% endifequal %}
+                            <!-- Comment Meta -->
+                            <div class="desc" id="comment_{{ comment.pk }}">
+                                {% ifequal reply.user.username 'reborn' %}
+                                <h5>Blogger</h5>
+                                {% else %}
+                                <h5>{{ comment.user.username }}</h5>
+                                {% endifequal %}
+                                <div class="">
+                                    <p id="comment_{{ comment.pk }}" class="comment">{{ comment.text|safe }}</p>
+                                </div>
+                                        <div class="d-flex justify-content-between">
+                                            <div class="d-flex align-items-center">
+                                                <p class="date">{{ comment.comment_time| timesince}} ago </p>
+                                            </div>
+                                            <div class="reply-btn">
+                                                <a href="#" class="btn-reply text-uppercase">like</a>
+                                            </div>
+                                            <div class="reply-btn">
+                                                <a href="javascript:reply({{ reply.pk }})" class="btn-reply text-uppercase">reply</a>
+                                            </div>
+                                        </div>
+                                   
+                            </div>
+                        </div>
+                        {% if reply.user.username is  null %}
+                        <ol class="children">
+                        {% for reply in comment.root_comment.all %}
+                            <li class="single_comment_area">
+                                <!-- Comment Content -->
+                                <div class="user d-flex d-flex mb-4">
+                                    <!-- Comment Author -->
+                                    {% ifequal reply.user.username 'reborn' %}
+                                    <div class="thumb">
+                                        <img src="{% static 'app/img/comment/comment_2.png' %}" alt="{{ reply.user.username }}">
+                                    </div>
+                                    {% else %}
+                                    <div class="thumb">
+                                        <img src="{% static 'app/img/comment/comment_2.png' %}" alt="{{ reply.user.username }}">
+                                    </div>
+                                    {% endifequal %}
+                                    <!-- Comment Meta -->
+                                    <div class="desc" id="comment_{{ reply.pk }}">
+                                        {% ifequal reply.user.username 'reborn' %}
+                                        <h5>Blogger</h5>
+                                        {% else %}
+                                        <h5>{{ reply.user.username }}-
+                                            {% ifequal reply.reply_to.username 'reborn' %}
+                                            Blogger
+                                            {% else %}
+                                            {{ reply.reply_to.username }}
+                                            {% endifequal %}
+                                        </h5>
+                                        {% endifequal %}
+                                        <div class="">
+                                            <p id="comment_{{ reply.pk }}" class="comment">{{ reply.text|safe }}</p>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <div class="d-flex align-items-center">
+                                                <p class="date">{{ reply.comment_time| timesince}} ago </p>
+                                            </div>
+                                            <div class="reply-btn">
+                                                <a href="#" class="btn-reply text-uppercase">like</a>
+                                            </div>
+                                            <div class="reply-btn">
+                                                <a href="javascript:reply({{ reply.pk }})" class="btn-reply text-uppercase">reply</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                            </ol>
+                        {% endif %}
+
+                    {% empty %}
+                    There are no comments for this article. Just say a few words!
+                    {% endfor %}  
+                    </li>
+                </ol>
+            </div>

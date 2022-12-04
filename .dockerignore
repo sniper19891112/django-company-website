@@ -1,0 +1,5 @@
+*.pyc
+*.pyo
+/data
+/static_collected
+/node_modules

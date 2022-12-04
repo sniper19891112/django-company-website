@@ -1,0 +1,97 @@
+{% extends "main/layout.html" %}
+{% load staticfiles %}
+{% load blogs_info %}
+{% load highlight %}
+{% load cache %}
+{% block meta %}
+    {% if tag_name %}
+        <title>{{ page_type }}:{{ tag_name }} | {{ SITE_DESCRIPTION }}</title>
+        {% comment %}<meta name="description" content="{{ page_type }}:{{ tag_name }}"/>{% endcomment %}
+    {% else %}
+        <title>{{ SITE_NAME }} | {{ SITE_DESCRIPTION }}</title>
+    {% endif %}
+    <meta name="description" content="{{ SITE_SEO_DESCRIPTION }}"/>
+    <meta name="keywords" content="{{ SITE_KEYWORDS }}"/>
+    <meta property="og:type" content="blog"/>
+    <meta property="og:title" content="{{ SITE_NAME }}"/>
+    <meta property="og:description" content="{{ SITE_DESCRIPTION }}"/>
+    <meta property="og:url" content="{{ SITE_BASE_URL }}"/>
+    <meta property="og:site_name" content="{{ SITE_NAME }}"/>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+{% endblock %}
+{% block compress_css %}
+<style>
+    h1 a img {
+        width:100%;
+    }
+</style>
+
+{% endblock %}
+{% block content %}
+<div class="services-area">
+        <div class="container">
+            <!-- Section-tittle -->
+            <div class="row d-flex justify-content-center">
+                {% if article.type == 'a' %}
+                    {% if not isindex %}
+                        {% cache 36000 breadcrumb article.pk %}
+                            {% load_breadcrumb article %}
+                        {% endcache %}
+                    {% endif %}
+                {% endif %}
+                <div class="col-lg-8">
+                    <div class="job-page-tittle text-center mb-80">
+                        <h2 class="heading">Our <span class="accent">Latest</span> Blogs.
+                        </h2>
+                    </div>
+                </div>
+                <div class="col-lg-4 blog_right_sidebar">
+                {% include 'blog/tags/search.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ***** Blog Area Start ***** -->
+    <section class="blog_area section-paddingr single-post-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mb-5 mb-lg-0">
+                    <div class="blog_left_sidebar">
+                        
+                    {% if query and page.object_list %}
+                        {% for article in page.object_list %}
+                            {% load_article_detail article.object True user %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="django-panel django-panel-padding">
+                            <p>Sorry..{{ query }}..No results found!</p>
+                            <p>Please enter <strong> complete and meaningful search keywords </strong>, such as: django</p>
+                        </div>
+                    {% endif %}
+                        {% if is_paginated %}
+                            {% load_pagination_info page_obj page_type tag_name %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="blog_right_sidebar">
+                        
+                        {% block sidebar %}
+                            {% with request.user.username as cachekey %}
+                                {% cache 36000 asidebar cachekey %}
+                                    {% load_sidebar user linktype %}
+                                {% endcache %}
+                            {% endwith %}
+                        {% endblock %}
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </section>
+    <!-- ***** Blog Area End ***** -->
+
+    
+{%endblock%}

@@ -1,0 +1,19 @@
+{% load blogs_info %}
+{% load staticfiles %}
+{% load cache %}
+{% with article.id|add:user.is_authenticated as cachekey %}
+    {% cache 36000 articlefooter cachekey %}
+        
+            <div class="author mb-4 d-flex align-items-center">
+				<a href="#" class="img" style="background-image: url({% static 'app/img/blog/author.png' %});"></a>
+				<div class="ml-3 info">
+				    <span>Written by</span>
+				    <h3><a href="{{article.author.get_absolute_url}}"title="View all articles published by {{article.author.username}}"
+                    rel="author"><span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                <span itemprop="name" itemprop="publisher">{{ article.author.username }}</a>, <span>{{article.pub_time|date:'M'}} {{article.pub_time|date:'d'}}, {{article.pub_time|date:'Y'}}</span></h3>
+				</div>
+			</div>
+            
+        <!-- .entry-meta -->
+    {% endcache %}
+{% endwith %}

@@ -1,0 +1,26 @@
+{% load blogs_info %}
+{% load staticfiles %}
+{% load cache %}
+
+<div class="single-post">
+   <div class="blog_details">
+        <div>
+            <textarea id="textToSpeech" hidden>{{ article.body|custom_markdown|striptags}}</textarea>
+        </div>
+        <ul>
+         {% load_article_metas article user True %}
+        </ul>
+      <p class="excert">
+        {{ article.body|custom_markdown }}
+        </p>
+      <p class='tagcloud'>
+            {% if article.type == 'a' %}
+                {% if article.tags.all %}
+                    {% for t in article.tags.all %}
+                        <a href=' {{ t.get_absolute_url }}' rel="tag" title="View all articles tagged with {{ t.name }}">{{ t.name }}</a>
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
+            </p>
+   </div>
+</div>
